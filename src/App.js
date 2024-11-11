@@ -1,23 +1,45 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
+import TaskList from './components/TaskList';
+import AddTask from './components/AddTask';
 import './App.css';
 
+
 function App() {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    const { data, error } = await supabase.from('tasks').select('*');
+    if (error) {
+      console.error('Error fetching tasks:', error);
+    } else {
+      setTasks(data || []); // Asegura que 'data' sea un array o vacío si es null
+    }
+  };
+
+  const addTask = async (task) => {
+    const { data, error } = await supabase.from('tasks').insert([task]).select();
+    if (error) {
+      console.error('Error adding task:', error);
+      return;
+    }
+
+    if (Array.isArray(data)) {
+      setTasks([...tasks, ...data]);
+    } else {
+      console.error('Data returned is not an array:', data);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>To-Do List</h1>
+      <AddTask onAddTask={addTask} />
+      <TaskList tasks={tasks} />
     </div>
   );
 }
