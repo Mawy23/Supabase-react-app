@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://oykfqhoodcezvcrngmwn.supabase.co';
-const supabaseKey = process.env.REACT_APP_SUPABASE_KEY; // Utiliza variables de entorno para mayor seguridad
+// Tomando las variables de entorno de React
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
+
 export const supabase = createClient(supabaseUrl, supabaseKey);
